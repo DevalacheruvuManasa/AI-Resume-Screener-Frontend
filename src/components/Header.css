@@ -1,0 +1,60 @@
+/* src/components/Header.css */
+.app-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: #333;
+}
+
+.app-header-main nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.welcome-user {
+    color: #555;
+    font-weight: 500;
+}
+
+.btn-nav {
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid #ced4da;
+    color: #333;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-nav:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.btn-nav-primary {
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    border: none;
+}
+
+.btn-nav-primary:hover {
+    background-color: #0056b3;
+}
