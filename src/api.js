@@ -15,24 +15,33 @@ export default apiClient;*/
 // File: src/api.js
 import axios from 'axios';
 
-// --- THIS IS THE NEW, HARDCODED LOGIC ---
+// --- THE DEFINITIVE CONFIGURATION FOR LOCAL & DEPLOYED ENVIRONMENTS ---
 
-// Define the production URL explicitly.
-const PRODUCTION_URL = 'https://ai-resume-screener-backend.onrender.com/api'; // <-- PASTE YOUR LIVE BACKEND URL HERE
+// This is the public URL of your deployed backend service on Render.
+// It is used ONLY when the React app is built for production.
+const PRODUCTION_URL = 'https://ai-resume-screener-backend.onrender.com/api';
+
+// This is the URL for your backend when you are running it on your local machine.
 const DEVELOPMENT_URL = 'http://localhost:8080/api';
 
-// Vite automatically sets import.meta.env.MODE to 'production' during a build.
-// We check this to decide which URL to use.
+// Vite, the tool that builds your React app, automatically sets a special variable
+// `import.meta.env.MODE` to 'production' when you run `npm run build` (which is what Render does).
+// When you run `npm run dev` locally, this variable is 'development'.
+// We use this to decide which URL to use.
 const API_URL = import.meta.env.MODE === 'production' 
     ? PRODUCTION_URL 
     : DEVELOPMENT_URL;
 
-console.log(`[API Client] Running in ${import.meta.env.MODE} mode. API URL is: ${API_URL}`);
+// This is a helpful debug message that will appear in your browser's console (F12).
+// On your live site, it should show the PRODUCTION_URL.
+// On your local machine, it should show the DEVELOPMENT_URL.
+console.log(`[API Client] App running in '${import.meta.env.MODE}' mode. Using API URL: ${API_URL}`);
 
-// The rest of the file is the same
+// Create a central, pre-configured instance of axios.
 const apiClient = axios.create({
-    baseURL: API_URL,
-    withCredentials: true, 
+    baseURL: API_URL,      // All requests will be sent to this base URL.
+    withCredentials: true, // This is CRITICAL for sending session cookies for authentication.
 });
 
+// Export this single, configured instance for all other components to use.
 export default apiClient;
