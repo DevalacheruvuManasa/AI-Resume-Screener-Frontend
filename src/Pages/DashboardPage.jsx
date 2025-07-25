@@ -1,12 +1,14 @@
 // File: src/Pages/DashboardPage.jsx
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-// The import for Header has been removed.
+import apiClient from '../api'; // Correctly using the central API client
+
+// WE NO LONGER NEED TO IMPORT HEADER HERE
+// import Header from '../components/Header'; 
 
 export default function DashboardPage() {
-    // All of your state and logic functions (useState, useEffect, handleSubmit)
-    // remain exactly the same and are correct.
+    // All of your state and logic functions (useState, useEffect, handleSubmit, etc.)
+    // remain exactly the same. No changes are needed there.
     const [jobDescription, setJobDescription] = useState('');
     const [resumeFile, setResumeFile] = useState(null);
     const [candidates, setCandidates] = useState([]);
@@ -14,12 +16,11 @@ export default function DashboardPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const API_URL = 'http://localhost:8080/api';
 
     const fetchCandidates = async () => {
         setIsFetching(true);
         try {
-            const response = await axios.get(`${API_URL}/candidates`, { withCredentials: true });
+            const response = await apiClient.get('/candidates');
             setCandidates(Array.isArray(response.data) ? response.data : []);
         } catch (err) {
             console.error('Failed to fetch candidates:', err);
@@ -40,29 +41,22 @@ export default function DashboardPage() {
             setError('Please provide both a job description and a resume file.');
             return;
         }
-
         setIsSubmitting(true);
         setError('');
         setSuccess('');
-
         const formData = new FormData();
         formData.append('resume', resumeFile);
         formData.append('jobDescription', jobDescription);
-
         try {
-            const response = await axios.post(`${API_URL}/screen`, formData, {
+            const response = await apiClient.post('/screen', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                withCredentials: true,
             });
-
             setSuccess(`Successfully screened resume for ${response.data.candidateName || 'new candidate'}!`);
             const newCandidate = response.data;
             setCandidates(prevCandidates => [newCandidate, ...prevCandidates]);
-            
             setJobDescription('');
             setResumeFile(null);
             e.target.reset();
-
         } catch (err) {
             console.error('Screening submission failed:', err);
             setError(err.response?.data?.message || 'An unknown error occurred during screening.');
@@ -77,13 +71,14 @@ export default function DashboardPage() {
         return '#dc3545';
     };
 
-    // The return statement is now wrapped in a single <div> or fragment.
-    // The <Header> and <main> tags have been removed as they are handled by Layout.jsx.
+    // --- THIS IS THE CORRECTED RETURN STATEMENT ---
+    // It no longer includes the <Header /> or the outer <div>
     return (
-        <div className="container">
+        <main className="container">
             {error && <div className="alert error-alert" role="alert">{error}</div>}
             {success && <div className="alert success-alert" role="alert">{success}</div>}
             
+            {/* Form Card */}
             <div className="card">
                 <form onSubmit={handleSubmit}>
                     <h2 style={{ marginBottom: '1.5rem', fontWeight: '700' }}>Screen a New Candidate</h2>
@@ -116,6 +111,7 @@ export default function DashboardPage() {
                 </form>
             </div>
 
+            {/* Results Card */}
             <div className="card">
                 <h2 style={{ marginBottom: '1.5rem', fontWeight: '700' }}>Screening History</h2>
                 {isFetching ? (
@@ -154,6 +150,6 @@ export default function DashboardPage() {
                     </div>
                 )}
             </div>
-        </div>
+        </main>
     );
 }
