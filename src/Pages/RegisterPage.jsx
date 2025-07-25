@@ -1,10 +1,9 @@
 // File: src/Pages/RegisterPage.jsx
 
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import apiClient from '../api'; // <-- 1. IMPORT the central apiClient
 
-// The function is defined WITHOUT "export default" here
 function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -20,9 +19,8 @@ function RegisterPage() {
         setIsLoading(true);
 
         try {
-            // Use your central apiClient for consistency
-            // Assumes you have an api.js file
-            await axios.post('http://localhost:8080/api/auth/register', { username, password });
+            // 2. USE apiClient and a relative path. The baseURL is now handled automatically.
+            await apiClient.post('/auth/register', { username, password });
             
             setSuccess('Registration successful! Redirecting to login...');
             setTimeout(() => navigate('/login'), 2000);
@@ -60,5 +58,4 @@ function RegisterPage() {
     );
 }
 
-// The SINGLE "export default" is here at the very end of the file.
 export default RegisterPage;
