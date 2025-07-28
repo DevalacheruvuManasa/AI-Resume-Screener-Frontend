@@ -1,19 +1,20 @@
 // File: src/Pages/DashboardPage.jsx
 
 import { useState, useEffect } from 'react';
-import apiClient from '../api'; // Correctly using the central API client
+import apiClient from '../api'; // Use your central API client
 
-// WE NO LONGER NEED TO IMPORT HEADER HERE
-// import Header from '../components/Header'; 
+// Note: The Header is no longer imported or rendered here.
+// It is now handled by the Layout.jsx component in your App router.
 
 export default function DashboardPage() {
-    // All of your state and logic functions (useState, useEffect, handleSubmit, etc.)
-    // remain exactly the same. No changes are needed there.
+    // State for the form inputs
     const [jobDescription, setJobDescription] = useState('');
     const [resumeFile, setResumeFile] = useState(null);
+
+    // State for the results and UI feedback
     const [candidates, setCandidates] = useState([]);
-    const [isFetching, setIsFetching] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isFetching, setIsFetching] = useState(true); // For the initial data load
+    const [isSubmitting, setIsSubmitting] = useState(false); // For form submission process
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -31,33 +32,44 @@ export default function DashboardPage() {
         }
     };
 
+    // This hook runs fetchCandidates() once when the dashboard component first mounts
     useEffect(() => {
         fetchCandidates();
     }, []);
 
+    // Handler for the form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!resumeFile || !jobDescription) {
             setError('Please provide both a job description and a resume file.');
             return;
         }
+
         setIsSubmitting(true);
         setError('');
         setSuccess('');
+
         const formData = new FormData();
         formData.append('resume', resumeFile);
         formData.append('jobDescription', jobDescription);
+
         try {
             const response = await apiClient.post('/screen', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setSuccess(`Successfully screened resume for ${response.data.candidateName || 'new candidate'}!`);
+            
+            // Instantly add the new candidate to the UI for a fast user experience
             const newCandidate = response.data;
             setCandidates(prevCandidates => [newCandidate, ...prevCandidates]);
+            
+            // Clear the form for the next submission
             setJobDescription('');
             setResumeFile(null);
             e.target.reset();
-        } catch (err) {
+
+        } catch (err)
+        {
             console.error('Screening submission failed:', err);
             setError(err.response?.data?.message || 'An unknown error occurred during screening.');
         } finally {
@@ -71,13 +83,11 @@ export default function DashboardPage() {
         return '#dc3545';
     };
 
-    // --- THIS IS THE CORRECTED RETURN STATEMENT ---
-    // It no longer includes the <Header /> or the outer <div>
     return (
         <main className="container">
             {error && <div className="alert error-alert" role="alert">{error}</div>}
             {success && <div className="alert success-alert" role="alert">{success}</div>}
-            
+
             {/* Form Card */}
             <div className="card">
                 <form onSubmit={handleSubmit}>
